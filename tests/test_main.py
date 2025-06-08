@@ -97,8 +97,8 @@ def test_custom_template_via_json(tmp_path: Path):
         'end_frame': 1052,
         'width': 1920,
         'height': 1080,
-        'path_pattern': '{show}/test/{scene}/{shot}/{task}_{version}',
-        'file_pattern': '{show}_{scene}_{shot}.{frame}',
+        'path_pattern': '{show}/test/{shot}/{task}_{version}',
+        'file_pattern': '{shot}.{frame}',
     }
 
     # Create template file
@@ -115,10 +115,10 @@ def test_custom_template_via_json(tmp_path: Path):
     generate_dummy_shots(template, str(output_dir))
 
     # Check custom structure was created
-    expected_path = output_dir / 'foo/test/sc01/sh010/lighting_v002'
+    expected_path = output_dir / 'foo/test/sh010/lighting_v002'
     assert expected_path.exists(), f"Custom template structure not created: {expected_path}"
 
-    expected_filename = expected_path / 'foo_sc01_sh010.1050.exr'
+    expected_filename = expected_path / 'sh010.1050.exr'
     assert expected_filename.exists(), f"Custom template structure not created: {expected_path}"
 
     # Check custom frame range
