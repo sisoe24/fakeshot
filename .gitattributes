@@ -1,0 +1,19 @@
+.gitignore                 export-ignore
+.gitattributes             export-ignore
+
+.python-version            export-ignore
+.pre-commit-config.yaml    export-ignore
+
+README.md                  export-ignore
+CHANGELOG.md               export-ignore
+poetry*                    export-ignore
+
+.github                    export-ignore
+.vscode                    export-ignore
+tests                      export-ignore
+out                        export-ignore
+
+# Treat all Python files as text and use LF for end of line
+*     text=auto
+*.py  text eol=lf
+*.py  text diff=python
