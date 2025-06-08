@@ -95,6 +95,11 @@ Examples:
     if args.verbose:
         CONSOLE_LOGGER.setLevel(logging.DEBUG)
 
+    # Apply CLI arguments to template
+    for attr, value in args._get_kwargs():
+        if hasattr(template, attr):
+            setattr(template, attr, value)
+
     if args.template:
         LOGGER.info('Using user template: %s', args.template)
         with open(args.template) as f:
