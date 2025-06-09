@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+import io
+import csv
+import sys
 import json
 from pathlib import Path
 
-from fakeshot.main import generate_dummy_shots
+from _pytest.monkeypatch import MonkeyPatch
+
+from fakeshot.main import generate_csv, generate_dummy_shots
 from fakeshot.template import Template
 
 
@@ -124,6 +129,59 @@ def test_custom_template_via_json(tmp_path: Path):
     # Check custom frame range
     exr_files = list(expected_path.glob('*.exr'))
     assert len(exr_files) == 2, f"Expected 2 frames, got {len(exr_files)}"
+
+
+def test_generate_csv_to_stringio(monkeypatch: MonkeyPatch):
+    """Test generate_csv outputs correct CSV to stdout when no output path is given."""
+
+    template = Template()
+    captured = io.StringIO()
+    monkeypatch.setattr(sys, 'stdout', captured)
+    generate_csv(template)
+    output = captured.getvalue()
+    assert 'scene,shot,task' in output
+    # Check that at least one expected row is present
+    assert '001,0010,comp' in output or '001,0010,anim' in output
+
+
+def test_generate_csv_to_file(tmp_path: Path):
+    """Test generate_csv writes correct CSV file when output path is given."""
+
+    template = Template()
+    generate_csv(template, str(tmp_path))
+    csv_file = tmp_path / 'shots.csv'
+    assert csv_file.exists()
+    with open(csv_file, newline='') as f:
+        reader = csv.DictReader(f)
+        rows = list(reader)
+        assert rows, 'CSV file should not be empty'
+        # Check that all required columns exist
+        assert set(rows[0].keys()) == {'scene', 'shot', 'task'}
+        # Check that at least one row matches expected template data
+        assert any(row['scene'] == '001' and row['shot'] == '0010' for row in rows)
+
+
+def test_generate_csv_custom_template(tmp_path: Path):
+    """Test generate_csv with a custom template produces expected CSV rows."""
+
+    template = Template()
+    template.scene = 'A,B'
+    template.shot = '10'
+    template.task = 'lighting,comp'
+
+    generate_csv(template, str(tmp_path))
+    csv_file = tmp_path / 'shots.csv'
+    with open(csv_file, newline='') as f:
+        reader = csv.DictReader(f)
+        rows = list(reader)
+        expected = [
+            {'scene': 'A', 'shot': '10', 'task': 'lighting'},
+            {'scene': 'A', 'shot': '10', 'task': 'comp'},
+            {'scene': 'B', 'shot': '10', 'task': 'lighting'},
+            {'scene': 'B', 'shot': '10', 'task': 'comp'},
+        ]
+        assert all(row in rows for row in expected)
+        assert len(rows) == 4
 
 
 if __name__ == '__main__':

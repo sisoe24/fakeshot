@@ -53,12 +53,24 @@ class Template:
         """
         return product(
             [self.show],
-            _split(self.scene),
-            _split(self.shot),
-            _split(self.task),
-            _split(self.version),
+            self.get_scenes(),
+            self.get_shots(),
+            self.get_tasks(),
+            self.get_versions(),
             range(self.start_frame, self.end_frame),
         )
+
+    def get_scenes(self) -> list[str]:
+        return _split(self.scene)
+
+    def get_shots(self) -> list[str]:
+        return _split(self.shot)
+
+    def get_tasks(self) -> list[str]:
+        return _split(self.task)
+
+    def get_versions(self) -> list[str]:
+        return _split(self.version)
 
     def generate_shots(self) -> Generator[Shot, Any, None]:
         """Returns a generator of Shot objects based on the current template data."""

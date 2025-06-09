@@ -6,7 +6,7 @@ import logging
 import argparse
 from dataclasses import asdict
 
-from .main import generate_dummy_shots
+from .main import generate_csv, generate_dummy_shots
 from .logger import LOGGER, CONSOLE_LOGGER
 from .template import Template
 
@@ -35,9 +35,11 @@ Examples:
     )
 
     parser.add_argument('-v', '--verbose', action='store_true', help='Verbose mode')
-    parser.add_argument('--out', default='./out', help='Output directory for EXR files')
+    parser.add_argument('--out', help='Output directory for EXR files. (default: ./out)')
     parser.add_argument('--template', help='Specify a different template.json')
     parser.add_argument('--sample-template', action='store_true', help='Output a sample template')
+    parser.add_argument('--csv', action='store_true',
+                        help='Export as csv rather than creating the shots.')
 
     template = Template()
 
@@ -88,12 +90,12 @@ Examples:
 
     args = parser.parse_args()
 
+    if args.verbose:
+        CONSOLE_LOGGER.setLevel(logging.DEBUG)
+
     if args.sample_template:
         print(json.dumps(asdict(template), indent=4))
         sys.exit(0)
-
-    if args.verbose:
-        CONSOLE_LOGGER.setLevel(logging.DEBUG)
 
     # Apply CLI arguments to template
     for attr, value in args._get_kwargs():
@@ -105,7 +107,10 @@ Examples:
         with open(args.template) as f:
             template.update(json.load(f))
 
-    LOGGER.info('Generating shots...')
-    generate_dummy_shots(template, args.out)
+    if args.csv:
+        generate_csv(template, args.out)
+        sys.exit(0)
+
+    generate_dummy_shots(template, args.out or './out')
 
     sys.exit(0)

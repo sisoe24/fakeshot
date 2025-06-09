@@ -1,6 +1,6 @@
 [project]
 name = "fakeshot"
-version = "0.1.0"
+version = "0.2.0"
 description = "Generate dummy EXR files for VFX pipeline testing."
 authors = [
     { name = "virgilsisoe", email = "28490646+sisoe24@users.noreply.github.com" },
@@ -57,6 +57,14 @@ max_line_length = 100
 skip = ["__init__.py"]
 add_imports = "from __future__ import annotations"
 length_sort = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = [
+    "--no-header",
+    "--tb=short",
+    "-W ignore::DeprecationWarning",
+]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
