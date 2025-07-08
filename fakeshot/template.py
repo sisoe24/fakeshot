@@ -6,9 +6,9 @@ from itertools import product
 from dataclasses import asdict, dataclass
 
 
-def _split(s: str) -> list[str]:
-    """Split by comma and strip white space."""
-    return [s.strip() for s in s.split(',')]
+def split_n_strip(s: str, delimiter: str = ',') -> list[str]:
+    """Split by delimiter and strip white space."""
+    return [s.strip() for s in s.split(delimiter)]
 
 
 @dataclass(frozen=True)
@@ -61,16 +61,16 @@ class Template:
         )
 
     def get_scenes(self) -> list[str]:
-        return _split(self.scene)
+        return split_n_strip(self.scene)
 
     def get_shots(self) -> list[str]:
-        return _split(self.shot)
+        return split_n_strip(self.shot)
 
     def get_tasks(self) -> list[str]:
-        return _split(self.task)
+        return split_n_strip(self.task)
 
     def get_versions(self) -> list[str]:
-        return _split(self.version)
+        return split_n_strip(self.version)
 
     def generate_shots(self) -> Generator[Shot, Any, None]:
         """Returns a generator of Shot objects based on the current template data."""
