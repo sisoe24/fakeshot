@@ -1,6 +1,6 @@
 [project]
 name = "fakeshot"
-version = "0.3.0"
+version = "0.3.2"
 description = "Generate dummy EXR files for VFX pipeline testing."
 authors = [
     { name = "virgilsisoe", email = "28490646+sisoe24@users.noreply.github.com" },
