@@ -18,19 +18,19 @@ def main():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         usage="""
 Examples:
-  %(prog)s --out ./renders
+  fakeshot --out ./renders
     Generate using default template to ./renders directory
 
-  %(prog)s --show myfilm --scene 010,020 --shot 0010,0020 --task comp,anim
+  fakeshot --show myfilm --scene 010,020 --shot 0010,0020 --task comp,anim
     Generate shots for 'myfilm' with multiple scenes, shots, and tasks
 
-  %(prog)s --end_frame 1024 --width 1920 --height 1080
+  fakeshot --end_frame 1024 --width 1920 --height 1080
     Generate HD frames from 1001 to 1023
 
-  %(prog)s --template custom.json --out /path/to/output
+  fakeshot --template custom.json --out /path/to/output
     Use custom template file
 
-  %(prog)s --sample-template > my_template.json
+  fakeshot --sample-template > my_template.json
     Generate a sample template file
         """.strip()
     )
