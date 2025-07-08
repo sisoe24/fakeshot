@@ -6,9 +6,10 @@ import logging
 import argparse
 from dataclasses import asdict
 
-from .main import generate_csv, generate_dummy_shots
 from .logger import LOGGER, CONSOLE_LOGGER
 from .template import Template
+from .generate_csv import generate_csv
+from .generate_shots import generate_shots
 
 
 def main():
@@ -111,6 +112,10 @@ Examples:
         generate_csv(template, args.out)
         sys.exit(0)
 
-    generate_dummy_shots(template, args.out or './out')
+    generate_shots(template, args.out or './out')
 
     sys.exit(0)
+
+
+if __name__ == '__main__':
+    main()

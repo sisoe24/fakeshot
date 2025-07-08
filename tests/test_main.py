@@ -8,8 +8,9 @@ from pathlib import Path
 
 from _pytest.monkeypatch import MonkeyPatch
 
-from fakeshot.main import generate_csv, generate_dummy_shots
 from fakeshot.template import Template
+from fakeshot.generate_csv import generate_csv
+from fakeshot.generate_shots import generate_shots
 
 
 def test_default_template_structure(tmp_path: Path):
@@ -17,7 +18,7 @@ def test_default_template_structure(tmp_path: Path):
 
     template = Template()
 
-    generate_dummy_shots(template, str(tmp_path))
+    generate_shots(template, str(tmp_path))
 
     # Default template should create:
     # prj/001/0010/comp/v001/, prj/001/0010/anim/v001/
@@ -40,7 +41,7 @@ def test_frame_range_generation(tmp_path: Path):
 
     template = Template()
 
-    generate_dummy_shots(template, str(tmp_path))
+    generate_shots(template, str(tmp_path))
 
     # Check one specific directory for frame count
     test_dir = tmp_path / 'prj/001/0010/comp/v001'
@@ -72,7 +73,7 @@ def test_exr_files_are_valid(tmp_path: Path):
     template.start_frame = 1001
     template.end_frame = 1003  # Only 2 frames
 
-    generate_dummy_shots(template, str(tmp_path))
+    generate_shots(template, str(tmp_path))
 
     # Find an EXR file
     exr_files = list(tmp_path.rglob('*.exr'))
@@ -117,7 +118,7 @@ def test_custom_template_via_json(tmp_path: Path):
         template.update(json.load(f))
 
     output_dir = tmp_path / 'output'
-    generate_dummy_shots(template, str(output_dir))
+    generate_shots(template, str(output_dir))
 
     # Check custom structure was created
     expected_path = output_dir / 'foo/test/sh010/lighting_v002'
@@ -192,7 +193,7 @@ if __name__ == '__main__':
     print(f"Default template created: show={template.show}, scene={template.scene}")
 
     # Test shot generation
-    shots = list(template.generate_shots())
+    shots = list(template.generate_shots_permutations())
     print(f"Generated {len(shots)} shots")
 
     if shots:
