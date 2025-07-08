@@ -28,7 +28,7 @@ class Shot:
         return Path(output, path.format(**data))
 
 
-@dataclass(init=False)
+@dataclass(kw_only=True)
 class Template:
     show: str = 'prj'
     scene: str = '001,002'
@@ -72,7 +72,7 @@ class Template:
     def get_versions(self) -> list[str]:
         return split_n_strip(self.version)
 
-    def generate_shots(self) -> Generator[Shot, Any, None]:
+    def generate_shots_permutations(self) -> Generator[Shot, Any, None]:
         """Returns a generator of Shot objects based on the current template data."""
         for _shot_permutation in self._get_permutations():
             yield Shot(*_shot_permutation)
