@@ -44,7 +44,7 @@ Repository = "https://github.com/sisoe24/fakeshot"
 Issues = "https://github.com/sisoe24/fakeshot/issues"
 
 [tool.poetry.scripts]
-fakeshot = "fakeshot.cli:main"
+fakeshot = "fakeshot.__main__:main"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.0"
