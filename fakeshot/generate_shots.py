@@ -5,7 +5,7 @@ from .template import Template
 from .generate_exr import generate_exr
 
 
-def generate_shots(template: Template, output: str) -> None:
+def generate_shots(template: Template, output: str, is_flat: bool = False) -> None:
     """
     Generates dummy EXR files for all permutations defined by the template.
 
@@ -25,6 +25,10 @@ def generate_shots(template: Template, output: str) -> None:
         None
     """
     LOGGER.info('Generating shots...')
+
+    if is_flat:
+        template.path_pattern = ''
+
     for shot in template.generate_shots_permutations():
 
         shot_path = shot.generate_path(template, output)
