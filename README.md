@@ -25,7 +25,7 @@ pipx install fakeshot
 
 ## Basic usage
 
-Just run it and it'll create some sample files in an `./out` folder:
+Just run it and it'll create some sample files in an `./fake_shots` folder:
 
 ```bash
 fakeshot
@@ -89,6 +89,7 @@ myproject/0010/0010_comp.1002.exr
 - `--verbose` - more output
 - `--file-pattern` - how to render the filename
 - `--path-pattern` - how to render the path of the filename
+- `--flat` - export in flat directory
 
 ## Why?
 

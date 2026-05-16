@@ -36,7 +36,8 @@ Examples:
     )
 
     parser.add_argument('-v', '--verbose', action='store_true', help='Verbose mode')
-    parser.add_argument('--out', help='Output directory for EXR files. (default: ./out)')
+    parser.add_argument('--out', default='./fake_shots',
+                        help='Output directory for EXR files. (default: ./fake_shots)')
     parser.add_argument('--template', help='Specify a different template.json')
     parser.add_argument('--sample-template', action='store_true', help='Output a sample template')
     parser.add_argument('--csv', action='store_true',
@@ -88,6 +89,10 @@ Examples:
         '--file-pattern', default=template.file_pattern,
         help='Filename pattern tokens'
     )
+    parser.add_argument(
+        '--flat', action='store_true',
+        help='Export files into a flat directory.'
+    )
 
     args = parser.parse_args()
 
@@ -112,7 +117,7 @@ Examples:
         generate_csv(template, args.out)
         sys.exit(0)
 
-    generate_shots(template, args.out or './out')
+    generate_shots(template, args.out, args.flat)
 
     sys.exit(0)
 

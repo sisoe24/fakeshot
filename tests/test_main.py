@@ -17,11 +17,13 @@ def test_default_template_structure(tmp_path: Path):
     """Test that default template generates expected directory structure."""
 
     template = Template()
-
+    template.show = 'prj'
+    template.scene = '001,002'
+    template.shot = '0010,0020'
+    template.task = 'comp,anim'
     generate_shots(template, str(tmp_path))
 
     # Default template should create:
-    # prj/001/0010/comp/v001/, prj/001/0010/anim/v001/
     expected_paths = [
         'prj/001/0010/comp/v001',
         'prj/001/0010/anim/v001',
@@ -34,6 +36,28 @@ def test_default_template_structure(tmp_path: Path):
     ]
 
     assert all((tmp_path / f).exists() for f in expected_paths)
+
+
+def test_flat_directory_generation(tmp_path: Path):
+    """Test that flat mode generates files directly in the output directory."""
+
+    template = Template()
+    template.show = 'prj'
+    template.scene = '001'
+    template.shot = '0010'
+    template.task = 'comp'
+    template.start_frame = 1001
+    template.end_frame = 1003
+
+    generate_shots(template, str(tmp_path), is_flat=True)
+
+    expected_files = [
+        'prj_001_0010_comp_v001.1001.exr',
+        'prj_001_0010_comp_v001.1002.exr',
+    ]
+
+    assert all((tmp_path / f).exists() for f in expected_files)
+    assert not (tmp_path / 'prj').exists()
 
 
 def test_frame_range_generation(tmp_path: Path):

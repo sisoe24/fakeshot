@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from typing import Any, Iterator, Generator
 from pathlib import Path
 from itertools import product
@@ -24,7 +25,7 @@ class Shot:
         data = asdict(self)
         data['frame'] = f'{self.frame:04d}'
 
-        path = f'{template.path_pattern}/{template.file_pattern}.exr'
+        path = os.path.join(template.path_pattern, f'{template.file_pattern}.exr')
         return Path(output, path.format(**data))
 
 
