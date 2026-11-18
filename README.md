@@ -78,13 +78,13 @@ myproject/0010/0010_comp.1002.exr
 ```
 ## Options
 
-- `--out` - where to save files (default: ./out)
+- `--out` - where to save files (default: ./fake_shots; with `--csv`, print to stdout)
 - `--show` - project name
 - `--scene` - scene names (comma separated)
 - `--shot` - shot names (comma separated)
 - `--task` - task types (comma separated)
 - `--version` - version string
-- `--start_frame` / `--end_frame` - frame range
+- `--start_frame` / `--end_frame` - frame range, both frames included
 - `--width` / `--height` - image dimensions
 - `--verbose` - more output
 - `--file-pattern` - how to render the filename

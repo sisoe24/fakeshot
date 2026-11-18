@@ -2,13 +2,15 @@
 A package for generating dummy EXR files following VFX naming conventions.
 
 Basic usage:
-    from fakeshot import Template, generate_dummy_shots
+    from fakeshot import Template, generate_shots
 
     template = Template(show='my_project')
-    generate_dummy_shots(template, './output')
+    generate_shots(template, './output')
 """
 
 from __future__ import annotations
+
+from importlib.metadata import version
 
 from .template import Template
 from .generate_csv import generate_csv
@@ -22,4 +24,4 @@ __all__ = [
     'generate_exr'
 ]
 
-__version__ = '0.3.2'
+__version__ = version('fakeshot')

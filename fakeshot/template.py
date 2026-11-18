@@ -4,7 +4,7 @@ import os
 from typing import Any, Iterator, Generator
 from pathlib import Path
 from itertools import product
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, fields, dataclass
 
 
 def split_n_strip(s: str, delimiter: str = ',') -> list[str]:
@@ -52,13 +52,18 @@ class Template:
             of the split values of show, scene, shot, task, version, and
             each frame in the specified range.
         """
+        if self.start_frame > self.end_frame:
+            raise ValueError(
+                f'start_frame ({self.start_frame}) is after end_frame ({self.end_frame})'
+            )
+
         return product(
             [self.show],
             self.get_scenes(),
             self.get_shots(),
             self.get_tasks(),
             self.get_versions(),
-            range(self.start_frame, self.end_frame),
+            range(self.start_frame, self.end_frame + 1),
         )
 
     def get_scenes(self) -> list[str]:
@@ -79,6 +84,20 @@ class Template:
             yield Shot(*_shot_permutation)
 
     def update(self, user_template: dict[str, Any]):
-        """Update current instance with dictionary data."""
+        """Update current instance with dictionary data.
+
+        Raises:
+            ValueError: on unknown keys or values that do not fit the field type.
+        """
+        field_types = {f.name: f.type for f in fields(self)}
+
+        unknown = user_template.keys() - field_types.keys()
+        if unknown:
+            raise ValueError(f'Unknown template keys: {", ".join(sorted(unknown))}')
+
         for k, v in user_template.items():
+            if field_types[k] == 'int':
+                v = int(v)
+            elif isinstance(v, list):
+                v = ','.join(map(str, v))
             setattr(self, k, v)

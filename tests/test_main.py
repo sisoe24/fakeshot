@@ -6,9 +6,11 @@ import sys
 import json
 from pathlib import Path
 
+import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
 from fakeshot.template import Template
+from fakeshot.__main__ import main
 from fakeshot.generate_csv import generate_csv
 from fakeshot.generate_shots import generate_shots
 
@@ -71,8 +73,8 @@ def test_frame_range_generation(tmp_path: Path):
     test_dir = tmp_path / 'prj/001/0010/comp/v001'
     exr_files = list(test_dir.glob('*.exr'))
 
-    # Default template: frames 1001-1009 (end_frame is exclusive)
-    expected_frame_count = template.end_frame - template.start_frame
+    # Default template: frames 1001-1010 (end_frame is inclusive)
+    expected_frame_count = template.end_frame - template.start_frame + 1
     assert len(exr_files) == expected_frame_count
 
     # Check frame numbering
@@ -82,7 +84,7 @@ def test_frame_range_generation(tmp_path: Path):
     ]
 
     frame_numbers.sort()
-    expected_frames = list(range(template.start_frame, template.end_frame))
+    expected_frames = list(range(template.start_frame, template.end_frame + 1))
     assert frame_numbers == expected_frames
 
 
@@ -124,7 +126,7 @@ def test_custom_template_via_json(tmp_path: Path):
         'task': 'lighting',
         'version': 'v002',
         'start_frame': 1050,
-        'end_frame': 1052,
+        'end_frame': 1051,
         'width': 1920,
         'height': 1080,
         'path_pattern': '{show}/test/{shot}/{task}_{version}',
@@ -209,18 +211,51 @@ def test_generate_csv_custom_template(tmp_path: Path):
         assert len(rows) == 4
 
 
-if __name__ == '__main__':
-    print('Running simple smoke test...')
 
-    # Test template creation
-    template = Template()
-    print(f"Default template created: show={template.show}, scene={template.scene}")
+def run_cli(monkeypatch: MonkeyPatch, *argv: str) -> None:
+    monkeypatch.setattr(sys, 'argv', ['fakeshot', *argv])
+    with pytest.raises(SystemExit) as exc:
+        main()
+    assert exc.value.code == 0
 
-    # Test shot generation
-    shots = list(template.generate_shots_permutations())
-    print(f"Generated {len(shots)} shots")
 
-    if shots:
-        print(f"First shot: {shots[0]}")
+def test_cli_flag_beats_template_file(tmp_path: Path, monkeypatch: MonkeyPatch):
+    """Flags typed by the user override the template file; the file overrides defaults."""
 
-    print('Test passed!')
+    template_file = tmp_path / 'template.json'
+    template_file.write_text(json.dumps({
+        'show': 'from_file', 'scene': ['001'], 'shot': '0010', 'task': 'comp',
+        'start_frame': '1001', 'end_frame': 1001,
+    }))
+
+    out = tmp_path / 'out'
+    run_cli(monkeypatch, '--template', str(template_file), '--show', 'from_cli', '--out', str(out))
+
+    files = [p.name for p in out.rglob('*.exr')]
+    assert files == ['from_cli_001_0010_comp_v001.1001.exr']
+
+
+def test_cli_csv_creates_missing_out_dir(tmp_path: Path, monkeypatch: MonkeyPatch):
+    out = tmp_path / 'missing' / 'dir'
+    run_cli(monkeypatch, '--csv', '--out', str(out))
+    assert (out / 'shots.csv').exists()
+
+
+def test_template_update_rejects_bad_data():
+    with pytest.raises(ValueError, match='start-frame'):
+        Template().update({'start-frame': 1001})
+
+    with pytest.raises(ValueError):
+        Template().update({'start_frame': 'abc'})
+
+
+def test_start_after_end_frame_raises(tmp_path: Path):
+    template = Template(start_frame=1010, end_frame=1001)
+    with pytest.raises(ValueError, match='start_frame'):
+        generate_shots(template, str(tmp_path))
+
+
+def test_flat_does_not_mutate_template(tmp_path: Path):
+    template = Template(scene='001', shot='0010', task='comp', end_frame=1001)
+    generate_shots(template, str(tmp_path), is_flat=True)
+    assert template.path_pattern == Template().path_pattern
