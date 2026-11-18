@@ -50,7 +50,6 @@ fakeshot = "fakeshot.__main__:main"
 [dependency-groups]
 dev = [
     "pytest>=8.4.0",
-    "tox>=4.26.0",
 ]
 
 [tool.autopep8]
