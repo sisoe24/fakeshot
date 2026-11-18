@@ -12,5 +12,3 @@ CONSOLE_LOGGER.setLevel(logging.INFO)
 CONSOLE_LOGGER.setFormatter(
     logging.Formatter('%(levelname)-8s - %(message)s')
 )
-
-LOGGER.addHandler(CONSOLE_LOGGER)

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from dataclasses import replace
+
 from .logger import LOGGER
 from .template import Template
 from .generate_exr import generate_exr
@@ -14,12 +16,13 @@ def generate_shots(template: Template, output: str, is_flat: bool = False) -> No
 
     ```
     template = Template(...)
-    generate_dummy_shots(template, './data')
+    generate_shots(template, './data')
     ```
 
     Args:
         template (Template): The template object containing shot parameters and file patterns.
         output (str): The root directory where the generated EXR files will be saved.
+        is_flat (bool, optional): Write every file directly into `output`.
 
     Returns:
         None
@@ -27,7 +30,7 @@ def generate_shots(template: Template, output: str, is_flat: bool = False) -> No
     LOGGER.info('Generating shots...')
 
     if is_flat:
-        template.path_pattern = ''
+        template = replace(template, path_pattern='')
 
     for shot in template.generate_shots_permutations():
 

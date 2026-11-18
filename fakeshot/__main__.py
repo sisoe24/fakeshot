@@ -25,7 +25,7 @@ Examples:
     Generate shots for 'myfilm' with multiple scenes, shots, and tasks
 
   fakeshot --end_frame 1024 --width 1920 --height 1080
-    Generate HD frames from 1001 to 1023
+    Generate HD frames from 1001 to 1024
 
   fakeshot --template custom.json --out /path/to/output
     Use custom template file
@@ -36,8 +36,9 @@ Examples:
     )
 
     parser.add_argument('-v', '--verbose', action='store_true', help='Verbose mode')
-    parser.add_argument('--out', default='./fake_shots',
-                        help='Output directory for EXR files. (default: ./fake_shots)')
+    parser.add_argument('--out',
+                        help='Output directory. EXR default: ./fake_shots. '
+                        'CSV default: print to stdout.')
     parser.add_argument('--template', help='Specify a different template.json')
     parser.add_argument('--sample-template', action='store_true', help='Output a sample template')
     parser.add_argument('--csv', action='store_true',
@@ -67,11 +68,11 @@ Examples:
     )
     parser.add_argument(
         '--start_frame', type=int, default=template.start_frame,
-        help='Starting frame number (inclusive)'
+        help='First frame number (inclusive)'
     )
     parser.add_argument(
         '--end_frame', type=int, default=template.end_frame,
-        help='Ending frame number (exclusive)'
+        help='Last frame number (inclusive)'
     )
     parser.add_argument(
         '--width', type=int, default=template.width,
@@ -96,6 +97,8 @@ Examples:
 
     args = parser.parse_args()
 
+    LOGGER.addHandler(CONSOLE_LOGGER)
+
     if args.verbose:
         CONSOLE_LOGGER.setLevel(logging.DEBUG)
 
@@ -103,21 +106,21 @@ Examples:
         print(json.dumps(asdict(template), indent=4))
         sys.exit(0)
 
-    # Apply CLI arguments to template
-    for attr, value in args._get_kwargs():
-        if hasattr(template, attr):
-            setattr(template, attr, value)
-
     if args.template:
         LOGGER.info('Using user template: %s', args.template)
         with open(args.template) as f:
             template.update(json.load(f))
+        # The file replaces only the defaults, so flags typed by the user still win.
+        parser.set_defaults(**asdict(template))
+        args = parser.parse_args()
+
+    template.update({k: v for k, v in vars(args).items() if k in asdict(template)})
 
     if args.csv:
-        generate_csv(template, args.out)
+        generate_csv(template, args.out or '')
         sys.exit(0)
 
-    generate_shots(template, args.out, args.flat)
+    generate_shots(template, args.out or './fake_shots', args.flat)
 
     sys.exit(0)
 

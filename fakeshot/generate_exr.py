@@ -16,7 +16,7 @@ def generate_exr(
     Generates a dummy EXR image file with a centered label.
 
     ```
-    generate_dummy_exr(
+    generate_exr(
         path='/path/to/file.1001.exr',
         label='myfile.1001',
         width=1920,

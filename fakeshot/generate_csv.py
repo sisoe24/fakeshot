@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-import io
 import csv
+import sys
+from pathlib import Path
+from contextlib import nullcontext
 from itertools import product
 
 from .template import Template
@@ -21,19 +23,19 @@ def generate_csv(template: Template, output: str = '') -> None:
         None
 
     """
-    out = open(f'{output}/shots.csv', 'w', newline='') if output else io.StringIO()
+    if output:
+        Path(output).mkdir(parents=True, exist_ok=True)
+        target = open(Path(output, 'shots.csv'), 'w', newline='')
+    else:
+        target = nullcontext(sys.stdout)
 
-    writer = csv.DictWriter(out, fieldnames=['scene', 'shot', 'task'])
-    writer.writeheader()
+    with target as out:
+        writer = csv.DictWriter(out, fieldnames=['scene', 'shot', 'task'])
+        writer.writeheader()
 
-    scenes = template.get_scenes()
-    shots = template.get_shots()
-    tasks = template.get_tasks()
+        scenes = template.get_scenes()
+        shots = template.get_shots()
+        tasks = template.get_tasks()
 
-    for scene, shot, task in product(scenes, shots, tasks):
-        writer.writerow(dict(scene=scene, shot=shot, task=task))
-
-    if isinstance(out, io.StringIO):
-        print(out.getvalue())
-
-    out.close()
+        for scene, shot, task in product(scenes, shots, tasks):
+            writer.writerow(dict(scene=scene, shot=shot, task=task))
