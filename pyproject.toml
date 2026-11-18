@@ -6,6 +6,8 @@ authors = [
     { name = "virgilsisoe", email = "28490646+sisoe24@users.noreply.github.com" },
 ]
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE.md"]
 requires-python = ">=3.10,<3.14"
 dependencies = [
     "openexr (>=3.3.3,<4.0.0)",
@@ -29,7 +31,6 @@ classifiers = [
     "Topic :: Multimedia :: Graphics",
     "Topic :: Software Development :: Testing",
     "Topic :: Utilities",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -43,12 +44,14 @@ Homepage = "https://github.com/sisoe24/fakeshot"
 Repository = "https://github.com/sisoe24/fakeshot"
 Issues = "https://github.com/sisoe24/fakeshot/issues"
 
-[tool.poetry.scripts]
+[project.scripts]
 fakeshot = "fakeshot.__main__:main"
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.4.0"
-tox = "^4.26.0"
+[dependency-groups]
+dev = [
+    "pytest>=8.4.0",
+    "tox>=4.26.0",
+]
 
 [tool.autopep8]
 max_line_length = 100
@@ -67,5 +70,8 @@ addopts = [
 ]
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.13.9,<0.14"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-root = ""

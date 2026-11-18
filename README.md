@@ -12,15 +12,32 @@ project/scene/shot/task/version/project_scene_shot_task_version.frame.exr
 
 Each EXR has the filename written in the center so you can tell what's what.
 
+## Run without installing
+
+With [uv](https://docs.astral.sh/uv/), `uvx` downloads fakeshot into a temporary environment and runs it:
+
+```bash
+uvx fakeshot
+uvx fakeshot --show myproject --end_frame 1024
+```
+
+To pin a version, or run the latest code from GitHub:
+
+```bash
+uvx fakeshot@0.4.1
+uvx --from git+https://github.com/sisoe24/fakeshot fakeshot
+```
+
 ## Install
 
 ```bash
-pip install fakeshot
+uv tool install fakeshot
 ```
 
-Or even better
+Or with pip:
+
 ```bash
-pipx install fakeshot
+pip install fakeshot
 ```
 
 ## Basic usage
@@ -96,3 +113,11 @@ myproject/0010/0010_comp.1002.exr
 Sometimes you need a quick, throwable bunch of EXR files to test tools or directory structures.
 
 The EXR files are just gray images with the filename in the middle, but they're real EXR files that should work with most tools.
+
+## Development
+
+```bash
+uv sync
+uv run pytest
+uv run fakeshot --help
+```
